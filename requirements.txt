@@ -1,0 +1,13 @@
+# Stage 1 runtime dependencies — deliberately minimal.
+# See pyproject.toml for the canonical dependency declaration; this file
+# is provided for convenience with plain `pip install -r requirements.txt`.
+#
+# Data-processing (pandas/numpy), modeling (statsmodels/scikit-learn), and
+# dashboard (streamlit/plotly) dependencies will be added in the stages
+# that first require them (Stage 2+), not before.
+
+PyYAML>=6.0
+python-dotenv>=1.0
+
+# Dev/test only:
+pytest>=8.0

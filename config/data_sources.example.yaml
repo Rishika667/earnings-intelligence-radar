@@ -1,0 +1,45 @@
+# Example data-source configuration.
+#
+# Non-secret connection parameters only. Any credential a source
+# eventually requires (API key, contact email for a courtesy rate limit,
+# etc.) must be referenced here only as an environment variable name —
+# never as a literal value. See .env.example for the corresponding
+# variable names.
+
+data_sources:
+  sec_xbrl:
+    enabled: true
+    base_url: "https://data.sec.gov"
+    # SEC requests a descriptive User-Agent with contact info for all
+    # programmatic access; read from environment, not hardcoded.
+    user_agent_env_var: "SEC_EDGAR_USER_AGENT"
+    rate_limit_requests_per_second: 5
+    notes: "Free, public. No API key required, but requires a compliant User-Agent header."
+
+  fred:
+    enabled: true
+    base_url: "https://api.stlouisfed.org/fred"
+    api_key_env_var: "FRED_API_KEY"
+    notes: "Free API key required (no cost). Register at fred.stlouisfed.org."
+
+  alfred:
+    enabled: true
+    base_url: "https://api.stlouisfed.org/fred"
+    api_key_env_var: "FRED_API_KEY"
+    notes: "ALFRED vintages are served through the FRED API with vintage-date params."
+
+  google_trends:
+    enabled: false
+    notes: "Free, unofficial API. No key required. Subject to rate limiting; enable when Stage 2/5 implements it."
+
+  us_census:
+    enabled: false
+    base_url: "https://api.census.gov/data"
+    api_key_env_var: "CENSUS_API_KEY"
+    notes: "Free API key required (no cost)."
+
+  noaa:
+    enabled: false
+    base_url: "https://www.ncdc.noaa.gov/cdo-web/api/v2"
+    api_key_env_var: "NOAA_API_KEY"
+    notes: "Free API key required (no cost, called a 'token')."

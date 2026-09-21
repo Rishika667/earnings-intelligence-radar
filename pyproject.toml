@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "earnings-intelligence-radar"
+version = "0.1.0"
+description = "Near-real-time earnings nowcasting and alternative-data intelligence platform using free public financial and economic data."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "Proprietary" }
+
+# Stage 1 dependencies are deliberately minimal: only what the
+# configuration-loading scaffold actually needs. Data-processing
+# (pandas/numpy), modeling (statsmodels/scikit-learn), and dashboard
+# (streamlit/plotly) dependencies are added in the stages that first need
+# them (Stage 2+), per the project's "no unnecessary complexity" principle.
+dependencies = [
+    "PyYAML>=6.0",
+    "python-dotenv>=1.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]

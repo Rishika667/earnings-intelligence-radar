@@ -1,0 +1,34 @@
+# Example company universe configuration.
+#
+# Copy this file to companies.yaml (git-ignored is NOT required for this
+# file since it contains no secrets, but companies.yaml is left as a local
+# working copy so users can customize their own coverage list without
+# touching the committed example).
+#
+# Fields:
+#   ticker:        Exchange ticker symbol, used as the canonical company_id
+#                  convention for Stage 1 scaffolding. May be revisited in
+#                  Stage 2 if a more robust identifier (e.g. CIK) is needed.
+#   name:          Company display name.
+#   cik:           SEC EDGAR Central Index Key (used for SEC XBRL ingestion
+#                  in a later stage). Left blank/omitted if unknown.
+#   sector:        Free-text sector label, for grouping in the dashboard.
+#   fiscal_year_end_month: Month (1-12) the fiscal year ends, needed for
+#                  aligning reporting periods.
+#   enabled:       Whether this company is currently in the active research
+#                  universe.
+
+companies:
+  - ticker: "AAPL"
+    name: "Apple Inc."
+    cik: "0000320193"
+    sector: "Technology"
+    fiscal_year_end_month: 9
+    enabled: true
+
+  - ticker: "MSFT"
+    name: "Microsoft Corporation"
+    cik: "0000789019"
+    sector: "Technology"
+    fiscal_year_end_month: 6
+    enabled: true

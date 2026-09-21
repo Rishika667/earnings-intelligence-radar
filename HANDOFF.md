@@ -34,7 +34,7 @@ Build a near-real-time financial intelligence platform that uses free public fin
 
 Stage:
 
-Stage 0 — Project Setup
+Stage 1 — Architecture + Project Scaffold (complete)
 
 Repository:
 
@@ -68,30 +68,71 @@ v0.1.0
 - BUILD_LOG.md created
 - DECISIONS.md created
 - HANDOFF.md created
+- **Stage 1 complete:** `src/eir` package scaffolded with one subpackage
+  per architectural component (ingestion, normalization, pit, quality,
+  features, forecasting/{baseline,statistical,ml}, uncertainty,
+  attribution, altdata, validation, history, monitoring, reporting,
+  utils, config) — each documented with a responsibility boundary, no
+  business logic implemented.
+- Data contracts defined in `src/eir/schemas/` (raw, normalized,
+  point-in-time, features, forecast, forecast history, validation,
+  provenance) as frozen dataclasses.
+- Non-secret config templates created under `config/` +
+  `config/README.md`; `.env.example` added; env-var-only credential
+  convention implemented in `src/eir/config/settings.py`.
+- Directory scaffold created: `data/`, `dashboard/` (placeholder
+  `app.py`), `docs/`, `tests/{smoke,unit}`, `scripts/`.
+- `docs/ARCHITECTURE.md` written (architecture, directory structure,
+  module responsibilities, data flow diagram, data contracts,
+  configuration architecture, testing architecture, stage-dependency
+  map).
+- Dependency management set up: `pyproject.toml` + `requirements.txt`
+  (minimal: PyYAML, python-dotenv, pytest), `pytest.ini`.
+- Test suite added and passing: 37/37 tests
+  (`tests/smoke/test_project_scaffold.py`,
+  `tests/unit/test_schemas.py`, `tests/unit/test_config.py`).
+- `scripts/check_scaffold.py` added as a manual sanity-check
+  convenience script.
 
 ---
 
 # NEXT TASK
 
-After completing the project-control system:
-
 Begin:
 
-Stage 1 — Architecture + Project Scaffold
+Stage 2 — Data Foundation
 
-The architecture stage should define:
+Per PROJECT_SPEC.md / BUILD_LOG.md Stage 2 objectives, this means:
 
-- System architecture
-- Data architecture
-- Module structure
-- Data schemas
-- Configuration structure
-- Forecasting architecture
-- Validation architecture
-- Dashboard architecture
-- Project directory structure
+1. Implement `eir.ingestion` clients for at least one free/public source.
+   Recommended first source: SEC XBRL (company facts API), since it is
+   directly tied to the revenue-nowcasting target and requires no paid
+   API key (only a compliant User-Agent header, per
+   `config/data_sources.example.yaml`).
+2. Implement `eir.normalization` to turn that source's `RawObservation`
+   records into `NormalizedObservation` records — this is also where the
+   first version of the canonical metric-name vocabulary should be
+   established and documented (e.g. in `docs/ARCHITECTURE.md` or a new
+   `docs/DATA_DICTIONARY.md`).
+3. Implement `eir.pit` to build point-in-time views from normalized data
+   (respecting `ProvenanceRecord.source_published_at` / `vintage_date`).
+4. Implement initial `eir.quality` freshness/completeness scoring.
+5. Decide and document the canonical `company_id` convention (ticker vs.
+   CIK) — currently only provisionally set to ticker in
+   `config/companies.example.yaml`; see PROJECT_STATE.md "Known
+   Problems". If CIK or another scheme is chosen, update
+   `config/companies.example.yaml` and `docs/ARCHITECTURE.md`
+   accordingly and record the decision in `DECISIONS.md`.
+6. Add unit tests for the new modules using small, reproducible fixtures
+   — do not fabricate realistic-looking financial results; either use
+   real small SEC/FRED responses (cached as test fixtures) or clearly
+   label synthetic fixture data as such in code/comments.
+7. Follow the standard stage-completion workflow (tests → update
+   PROJECT_STATE.md → update BUILD_LOG.md → update DECISIONS.md if a
+   major decision was made → update this HANDOFF.md → commit).
 
-The architecture should be practical and implementation-ready.
+Do not implement forecasting, uncertainty, attribution, alt-data testing,
+or the dashboard yet — those remain Stage 3+.
 
 ---
 

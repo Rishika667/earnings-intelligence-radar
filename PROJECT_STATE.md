@@ -10,7 +10,7 @@ The platform should provide not only a forecast, but also prediction ranges, pro
 
 ## Current Status
 
-Stage 0 — Project Setup
+Stage 1 — Architecture + Project Scaffold
 
 ---
 
@@ -39,27 +39,88 @@ v0.1.0
 - Model limitation requirement established
 - GitHub repository created
 - PROJECT_SPEC.md created
+- PROJECT_STATE.md, BUILD_LOG.md, DECISIONS.md, HANDOFF.md created
+  (project-control/recovery system complete)
+
+### Stage 1 — Architecture + Project Scaffold (this update)
+
+- Created `src/eir/` research/engineering package with module boundaries
+  for every future component: ingestion, normalization, pit, quality,
+  features, forecasting (baseline/statistical/ml), uncertainty,
+  attribution, altdata, validation, history, monitoring, reporting,
+  utils, config. Each module has a docstring stating its responsibility
+  boundary and explicit non-responsibilities; no business logic is
+  implemented yet.
+- Defined Stage 1 data contracts in `src/eir/schemas/`: `ProvenanceRecord`,
+  `RawObservation`, `NormalizedObservation`, `PitObservation`,
+  `FeatureValue`, `ForecastResult` (+ `PredictionRange`,
+  `DriverContribution`), `ForecastHistoryEntry`, `ValidationResult`, plus
+  shared enums (`DataSourceId`, `FreshnessStatus`, `OutcomeLabel`,
+  `ForecastModelType`, `ValidationScheme`). Raw / normalized / PIT /
+  features / forecast / forecast-history / validation / provenance are
+  all explicitly distinct types, as required.
+- Implemented a minimal, dependency-light configuration loader
+  (`eir.config.settings`) with a documented env-var-only convention for
+  secrets (`get_env`, `.env.example`) and YAML loading for non-secret
+  config (`load_yaml_config`, with `.example.yaml` fallback).
+- Created non-secret config templates: `config/companies.example.yaml`,
+  `config/data_sources.example.yaml`, `config/model.example.yaml`,
+  `config/app.example.yaml`, plus `config/README.md` documenting the
+  convention. No API keys/secrets exist anywhere in the repository;
+  credentials are referenced only by environment-variable name.
+- Created project directory scaffold: `src/`, `data/{raw,normalized,pit,
+  features,forecasts,validation}`, `tests/{smoke,unit}`, `dashboard/
+  {pages,components}`, `config/`, `docs/`, `scripts/`.
+- Created `dashboard/app.py` (Streamlit placeholder entrypoint, no
+  functionality) and `dashboard/README.md` documenting the
+  research/presentation separation rule.
+- Wrote `docs/ARCHITECTURE.md`: system architecture, directory structure,
+  module responsibilities, ASCII data-flow diagram, data contracts
+  summary, configuration architecture, testing architecture, and a
+  stage-dependency map.
+- Established dependency management: `pyproject.toml` (setuptools,
+  `src/` layout) + `requirements.txt`, deliberately minimal (PyYAML,
+  python-dotenv, pytest only — no pandas/numpy/streamlit/sklearn yet,
+  since Stage 1 does not need them).
+- Added `pytest.ini` and a full Stage 1 test suite: 4 smoke-test groups
+  (package import, all 19 module boundaries import, project-control
+  files present, no `.env` committed / no secret-like values in config)
+  and unit tests for schemas (structural construction, safe defaults —
+  no fabricated probabilities/ranges) and config loading (template
+  parsing, env-var fallback behavior, credential-field convention
+  check). 37/37 tests passing.
+- Added `scripts/check_scaffold.py` as a convenience manual sanity check
+  outside pytest.
+- Updated `README.md` with Stage 1 status and dev setup instructions
+  (no rewrite of existing content, additive only).
 
 ---
 
 ## In Progress
 
-Project control and recovery system.
+None — Stage 1 objectives are complete as scoped (architecture + scaffold
+only; no ingestion/modeling/dashboard logic).
 
 ---
 
 ## Next Task
 
-Create the remaining project-control files:
+Stage 2 — Data Foundation
 
-1. PROJECT_STATE.md
-2. BUILD_LOG.md
-3. DECISIONS.md
-4. HANDOFF.md
+Specifically (per BUILD_LOG.md Stage 2 objectives):
 
-After the control system is complete:
-
-Stage 1 — Architecture + Project Scaffold
+1. Implement `eir.ingestion` clients for at least one free/public source
+   (start with SEC XBRL, per PROJECT_SPEC.md priority).
+2. Implement `eir.normalization` for that source's data into
+   `NormalizedObservation` records, establishing the first version of the
+   canonical metric vocabulary.
+3. Implement `eir.pit` point-in-time view construction.
+4. Implement initial `eir.quality` freshness/provenance scoring.
+5. Add corresponding unit tests (no fabricated data — use real, small,
+   reproducible fixtures or clearly-marked synthetic fixtures for unit
+   tests only).
+6. Update PROJECT_STATE.md / BUILD_LOG.md / HANDOFF.md and commit per the
+   standard stage-completion workflow.
 
 ---
 
@@ -147,19 +208,29 @@ Data
 
 ## Known Problems
 
-None at project setup.
+None. Stage 1 test suite passes (37/37). One open item worth tracking:
+the canonical `company_id` convention (ticker vs. CIK vs. internal ID)
+is provisionally set to "ticker" in `config/companies.example.yaml`; this
+should be confirmed rather than silently changed once SEC XBRL ingestion
+(Stage 2) is implemented, since CIK may be more stable long-term.
 
 ---
 
 ## Last Completed Action
 
-Created the GitHub repository and PROJECT_SPEC.md.
+Completed Stage 1 — Architecture + Project Scaffold: created the `eir`
+package with module boundaries and data-contract schemas, config
+templates and loader, dashboard placeholder, docs/ARCHITECTURE.md, test
+suite (smoke + unit, 37/37 passing), and dependency management files.
 
 ---
 
 ## Next Exact Action
 
-Create PROJECT_STATE.md and then create BUILD_LOG.md, DECISIONS.md, and HANDOFF.md.
+Begin Stage 2 — Data Foundation: implement `eir.ingestion` for the first
+free/public source (recommended: SEC XBRL), then `eir.normalization`,
+`eir.pit`, and initial `eir.quality` freshness scoring, per the "Next
+Task" section above.
 
 ---
 

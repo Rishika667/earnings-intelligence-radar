@@ -1,0 +1,36 @@
+# Example model configuration.
+#
+# This template establishes the configuration shape expected by the
+# forecasting/uncertainty/validation layers once implemented (Stage 3+).
+# No model is trained or run from this file at Stage 1 — it exists purely
+# to lock in a sensible configuration contract early.
+
+forecasting:
+  baseline:
+    enabled: true
+    methods:
+      - "naive_last_period"
+      - "seasonal_naive"
+
+  statistical:
+    enabled: false
+    methods:
+      - "ridge"
+      - "lasso"
+
+  ml:
+    enabled: false
+    methods:
+      - "gradient_boosting"
+
+validation:
+  scheme: "walk_forward"     # must remain walk_forward for primary results
+  min_train_periods: 8
+  step_periods: 1
+
+uncertainty:
+  prediction_interval_confidence_level: 0.80
+  calibration_method: "empirical_residuals"   # placeholder; finalized in Stage 4
+
+reporting:
+  include_negative_findings: true

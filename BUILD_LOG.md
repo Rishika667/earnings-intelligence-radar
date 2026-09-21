@@ -26,11 +26,113 @@ This file records meaningful project progress, completed work, major implementat
 
 ### Current Stage
 
-Stage 0 — Project Setup
+Stage 0 — Project Setup (complete)
 
 ### Next Stage
 
 Stage 1 — Architecture + Project Scaffold
+
+---
+
+## 2026-09-21 — Stage 1: Architecture + Project Scaffold
+
+### What was created
+
+- `src/eir/` Python package (importable, `src/` layout) with one
+  subpackage per architectural component defined in PROJECT_SPEC.md:
+  `config`, `schemas`, `ingestion`, `normalization`, `pit`, `quality`,
+  `features`, `forecasting` (with `baseline`, `statistical`, `ml`
+  sub-packages), `uncertainty`, `attribution`, `altdata`, `validation`,
+  `history`, `monitoring`, `reporting`, `utils`. Every module's
+  `__init__.py` documents its responsibility boundary and explicit
+  non-responsibilities; none contain business logic yet.
+- Data contracts in `src/eir/schemas/`: `ProvenanceRecord`,
+  `RawObservation`, `NormalizedObservation`, `PitObservation`,
+  `FeatureValue`, `ForecastResult`/`PredictionRange`/
+  `DriverContribution`, `ForecastHistoryEntry`, `ValidationResult`, and
+  shared enums (`DataSourceId`, `FreshnessStatus`, `OutcomeLabel`,
+  `ForecastModelType`, `ValidationScheme`). Implemented as frozen
+  dataclasses to keep the layer simple and dependency-free.
+- Configuration layer: `src/eir/config/settings.py`
+  (`load_yaml_config`, `get_env`, `load_env`, `AppSettings`) plus
+  `config/companies.example.yaml`, `config/data_sources.example.yaml`,
+  `config/model.example.yaml`, `config/app.example.yaml`, and
+  `config/README.md` documenting the non-secret-config /
+  env-var-credential convention. `.env.example` added at repo root.
+- Directory scaffold: `data/{raw,normalized,pit,features,forecasts,
+  validation}` (with `.gitkeep` + `data/README.md`), `dashboard/
+  {pages,components}` (with `app.py` placeholder + README), `docs/`,
+  `tests/{smoke,unit}`, `scripts/`.
+- `docs/ARCHITECTURE.md`: design principles, directory structure,
+  module responsibilities, ASCII data-flow diagram (ingestion through
+  dashboard), data-contract summary table, configuration architecture,
+  testing architecture, and a stage-dependency table.
+- Dependency management: `pyproject.toml` (setuptools, `src/` layout,
+  package name `earnings-intelligence-radar`) and `requirements.txt`.
+  Runtime deps limited to PyYAML + python-dotenv; pytest as a dev/test
+  dependency. `pytest.ini` added (`testpaths = tests`,
+  `pythonpath = src`).
+- Tests: `tests/smoke/test_project_scaffold.py` (package import, all 19
+  module-boundary imports, project-control files present and non-empty,
+  required directories exist, no `.env` committed, no obvious
+  secret-like strings in config templates) and `tests/unit/
+  test_schemas.py` + `tests/unit/test_config.py` (dataclass
+  construction with safe defaults; YAML template parsing; env-var
+  fallback/require behavior; enforcement that data-source config
+  references credentials only via `*_env_var` keys, never literal
+  values). `scripts/check_scaffold.py` added as a manual convenience
+  check.
+- `README.md` updated additively with Stage 1 status, repository layout
+  summary, and dev setup instructions (existing content preserved).
+
+### Architectural decisions made
+
+- Company_id convention provisionally set to ticker symbol for Stage 1
+  scaffolding examples (see PROJECT_STATE.md "Known Problems" — flagged
+  for confirmation, not yet a formal DECISIONS.md entry since it has not
+  been exercised against real data).
+- PIT is modeled as an explicit *view* (separate `PitObservation` type)
+  built from normalized data plus an as-of cutoff, rather than mutating
+  normalized records in place — preserves full revision history for
+  audit while giving downstream layers a simple "what was known" table.
+- Data-quality/confidence (`data_confidence`) and calibrated probability
+  (`beat_probability`/etc.) are separate fields on `ForecastResult`,
+  reinforcing DECISIONS.md Decision 005 at the schema level.
+- No forecasting/ML/dashboard dependencies (pandas, numpy, scikit-learn,
+  statsmodels, streamlit, plotly) were added at this stage — deferred
+  until the stage that actually implements the corresponding
+  functionality, per the "no unnecessary complexity" constraint.
+
+### Tests / checks performed
+
+- `pytest` — 37/37 tests passing (`tests/smoke`, `tests/unit`).
+- `python scripts/check_scaffold.py` — passed.
+- Manual review confirming no `.env` file exists in the checkout, no
+  API keys/tokens/passwords appear in any committed file, and all
+  originally-existing project-control files (`PROJECT_SPEC.md`,
+  `PROJECT_STATE.md`, `DECISIONS.md`, `BUILD_LOG.md`, `HANDOFF.md`,
+  `README.md`, `.gitignore`) remain present and were only additively
+  edited (README.md) or left untouched.
+
+### Limitations / unresolved decisions
+
+- Canonical `company_id` scheme (ticker vs. CIK vs. internal ID) is not
+  finalized — see PROJECT_STATE.md "Known Problems". Should be settled
+  when SEC XBRL ingestion is implemented in Stage 2.
+- Canonical metric-name vocabulary (e.g. exact string for "revenue",
+  "fed_funds_rate") is referenced in schema docstrings but not yet
+  enumerated as a controlled list — deferred to Stage 2 since it depends
+  on the first real source integration.
+- No data has been ingested; no model exists; no dashboard functionality
+  exists. This is expected and intentional for Stage 1.
+
+### Current Stage
+
+Stage 1 — Architecture + Project Scaffold (complete)
+
+### Next Stage
+
+Stage 2 — Data Foundation
 
 ---
 
@@ -53,7 +155,7 @@ Objectives:
 
 ### Stage 1 — Architecture + Project Scaffold
 
-Status: NOT STARTED
+Status: COMPLETE (see 2026-09-21 entry above)
 
 Objectives:
 

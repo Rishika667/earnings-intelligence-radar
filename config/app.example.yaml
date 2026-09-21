@@ -1,0 +1,20 @@
+# Example application settings.
+#
+# Copy to app.yaml for a local working copy. Contains no secrets.
+
+app_name: "earnings-intelligence-radar"
+environment: "development"   # development | production
+log_level: "INFO"
+timezone: "UTC"
+
+dashboard:
+  title: "Earnings Intelligence Radar"
+  default_company: "AAPL"
+
+data_paths:
+  raw: "data/raw"
+  normalized: "data/normalized"
+  pit: "data/pit"
+  features: "data/features"
+  forecasts: "data/forecasts"
+  validation: "data/validation"
