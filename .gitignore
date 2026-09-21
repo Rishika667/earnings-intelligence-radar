@@ -1,0 +1,62 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+
+# Jupyter
+.ipynb_checkpoints/
+
+# IDE / editor
+.vscode/
+.idea/
+
+# Operating system
+.DS_Store
+Thumbs.db
+
+# Testing / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Streamlit
+.streamlit/secrets.toml
+
+# Local logs
+*.log
+
+# Local temporary files
+tmp/
+temp/
+
+# Raw downloaded data
+data/raw/
+
+# Local databases
+*.db
+*.sqlite
+*.sqlite3
+
+# Python packaging
+*.egg-info/
+dist/
+build/
+
+# Model artifacts / large local files
+models/*.pkl
+models/*.joblib
+models/*.parquet
+
+# Local outputs
+outputs/local/
